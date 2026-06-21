@@ -127,7 +127,10 @@
   /* fixed HUD readout (top-right) */
   .hud{position:absolute;top:clamp(20px,5vh,52px);right:clamp(24px,6vw,90px);text-align:right;font-family:'Space Mono',monospace;z-index:6;pointer-events:none;}
   .readout-year{font-size:clamp(38px,3.8vw,64px);line-height:1;letter-spacing:-0.02em;}
-  .readout-age{font-size:12px;letter-spacing:.24em;margin-top:10px;opacity:.6;}
+  .readout-age{font-size:12px;letter-spacing:.24em;margin-top:10px;opacity:.6;display:grid;justify-items:end;}
+  /* the two age states stack in one cell and crossfade (no hard display swap) */
+  .readout-age > span{grid-area:1/1;transition:opacity .5s ease;}
+  .readout-age > span.age-hide{opacity:0;}
   /* odometer digits: each column shows one digit of a vertical reel, driven by scroll */
   .odo{display:inline-flex;vertical-align:baseline;}
   /* one digit tall (neighbours stay clipped out of view), with a soft edge fade so the
@@ -193,7 +196,7 @@
       <!-- fixed HUD: live year / age ticker -->
       <div class="hud">
         <div class="readout-year"><span class="odo" id="yearOdo"></span></div>
-        <div class="readout-age"><span id="ageBorn">BORN · 2003</span><span class="age-num" id="ageNum" style="display:none;">AGE&nbsp;<span class="odo" id="ageOdo"></span></span></div>
+        <div class="readout-age"><span id="ageBorn">BORN · 2003</span><span class="age-num age-hide" id="ageNum">AGE&nbsp;<span class="odo" id="ageOdo"></span></span></div>
       </div>
 
       <!-- horizontal track of scenes -->
@@ -269,7 +272,7 @@
 
       <!-- foreground walker (fixed, grows + walks with progress) -->
       <div class="walker">
-        <canvas id="figCanvas" width="419" height="315"></canvas>
+        <canvas id="figCanvas" width="290" height="315"></canvas>
       </div>
 
     </div>
@@ -456,7 +459,7 @@
   var SECTION_YEAR = [2003, 2009, 2015, 2019, 2022, 2025, 2026];
 
   // ---- pencil-sketch frame sequence (canvas scrub) ----
-  // frames are pre-cropped 419x315 (figure tight, edges/watermark cleaned).
+  // frames are pre-cropped 290x315 (cut tight around the figure, edges/watermark cleaned).
   var FRAME_COUNT = 240, FPS = 24, MAX_FRAME = 218;
   var imgs = new Array(FRAME_COUNT + 1), curFrame = -1, revealed = false;
   function fname(i) { return 'uploads/frames/f' + (i < 10 ? '00' + i : i < 100 ? '0' + i : '' + i) + '.webp'; }
@@ -520,8 +523,8 @@
     var yearF = tableAt(p, SECTION_YEAR), ageF = yearF - 2003;
     setOdo(yearReels, yearF);
     var born = ageF < 1;
-    ageBornEl.style.display = born ? '' : 'none';
-    ageNumEl.style.display = born ? 'none' : '';
+    ageBornEl.classList.toggle('age-hide', !born);
+    ageNumEl.classList.toggle('age-hide', born);
     if (!born) setOdo(ageReels, ageF);
 
     // figure (walks + grows)
@@ -539,9 +542,42 @@
   function onScroll() { target = compute(); }
   function onResize() { measure(); onScroll(); }
 
+  // magnetic snap state (detected in the rAF loop so Lenis's micro-scroll tail
+  // near rest doesn't keep deferring it). lenisInst is set once Lenis starts.
+  var lenisInst = null, snapping = false, snapLastSY = -1, snapStable = 0, touching = false, lastInput = 0;
+  function snapToNearest() {
+    if (!lenisInst) return;
+    var jTop = journeyH.getBoundingClientRect().top + window.scrollY;
+    var rel = window.scrollY - jTop;
+    if (rel < -2 || rel > maxX + 2) return;                 // only inside the pinned journey
+    var i = Math.round(rel / vw);
+    if (i < 0) i = 0; if (i > N - 1) i = N - 1;
+    var off = Math.abs(rel - i * vw);                        // distance from that pane's centre
+    if (off < 2 || off > vw * 0.10) return;                 // only assist when already within 10% of a pane
+    snapping = true;
+    lenisInst.scrollTo(jTop + i * vw, {
+      duration: 1.6,
+      easing: function (t) { return -(Math.cos(Math.PI * t) - 1) / 2; },  // easeInOutSine — long, gentle pull-in + settle
+      onComplete: function () { snapping = false; }
+    });
+  }
+  // fresh user input cancels a snap and starts a grace period, so you can always
+  // pull off a pane (the magnet won't grab again until you stop feeding input).
+  function cancelSnap() { snapping = false; snapStable = 0; lastInput = performance.now(); }
+
   function loop() {
     p += (target - p) * SMOOTHING;
     render();
+    // as the scroll glides to a near-stop, gently pull onto a pane if we're close to one.
+    // re-checked across a short window so Lenis's slow creep into the capture zone is caught.
+    if (lenisInst && !snapping && !touching && performance.now() - lastInput > 450) {
+      var sy = window.scrollY;
+      if (Math.abs(sy - snapLastSY) < 3) {
+        if (snapStable < 5) snapStable++;
+        if (snapStable >= 2) snapToNearest();   // keep checking while slow so the creep into the zone is caught
+      } else snapStable = 0;
+      snapLastSY = sy;
+    }
     requestAnimationFrame(loop);
   }
 
@@ -550,9 +586,16 @@
   function startLenis() {
     if (REDUCE || !window.Lenis) return;
     var lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1, smoothWheel: true });
+    lenisInst = lenis;
     function lraf(t) { lenis.raf(t); requestAnimationFrame(lraf); }
     requestAnimationFrame(lraf);
     lenis.on('scroll', onScroll);
+    // any fresh user input cancels an in-flight snap so we never fight the user
+    window.addEventListener('wheel', cancelSnap, { passive: true });
+    window.addEventListener('keydown', cancelSnap);
+    window.addEventListener('touchstart', function () { touching = true; cancelSnap(); }, { passive: true });
+    window.addEventListener('touchmove', cancelSnap, { passive: true });
+    window.addEventListener('touchend', function () { touching = false; cancelSnap(); }, { passive: true });
   }
 
   // Scroll-reveal for the vertical work + footer (IntersectionObserver, not scroll listeners).
