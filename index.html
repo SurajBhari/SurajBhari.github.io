@@ -19,17 +19,17 @@
 <meta property="og:title" content="Suraj Bhari · Software Engineer">
 <meta property="og:description" content="A software engineer from India building tools for streamers and gamers. Maker of StreamSnip and 60+ open-source projects.">
 <meta property="og:url" content="https://surajbhari.com/">
-<meta property="og:image" content="https://surajbhari.com/favicon-64.png">
+<meta property="og:image" content="https://surajbhari.com/og.png">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="64">
-<meta property="og:image:height" content="64">
-<meta property="og:image:alt" content="SB monogram">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Suraj Bhari, Software Engineer">
 
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Suraj Bhari · Software Engineer">
 <meta name="twitter:description" content="A software engineer from India building tools for streamers and gamers. Maker of StreamSnip and 60+ open-source projects.">
-<meta name="twitter:image" content="https://surajbhari.com/favicon-64.png">
-<meta name="twitter:image:alt" content="SB monogram">
+<meta name="twitter:image" content="https://surajbhari.com/og.png">
+<meta name="twitter:image:alt" content="Suraj Bhari, Software Engineer">
 
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Suraj Bhari","url":"https://surajbhari.com","jobTitle":"Software Engineer","email":"surajbhari159@gmail.com","image":"https://surajbhari.com/favicon.png","alumniOf":"Graphic Era Hill University","address":{"@type":"PostalAddress","addressLocality":"Bikaner","addressRegion":"Rajasthan","addressCountry":"IN"},"sameAs":["https://github.com/SurajBhari","https://www.linkedin.com/in/suraj-bhari-323655198/","https://x.com/SurajBhari","https://www.youtube.com/@suraj_ag","https://www.instagram.com/suraj._.1436/","https://streamsnip.com"]}
@@ -58,6 +58,11 @@
   /* hover behaviours */
   .card{transition:background .25s,color .25s;}
   .card:hover{background:#15120C !important;color:#F2EDE2 !important;}
+  .card{transition:background .25s,color .25s,transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s ease;}
+  .card:hover{box-shadow:0 16px 34px rgba(21,18,12,.18);}
+  /* the flagship also has .reveal, whose transition would otherwise shadow .card's and make the
+     hover invert instant; this higher-specificity rule transitions both the reveal and the hover */
+  .card.reveal{transition:background .25s,color .25s,box-shadow .4s ease,opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1);}
   .flink{transition:opacity .2s;}
   .flink:hover{opacity:.5;}
   .ss-logo{display:inline-block;background-color:currentColor;vertical-align:middle;
@@ -73,7 +78,7 @@
 
   /* scroll-reveal for the vertical work + footer (motivated: sequences content into view) */
   .reveal{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1);}
-  .reveal.in{opacity:1;transform:none;}
+  .reveal.in{opacity:1;}
 
   /* accessibility: collapse looping + reveal motion when the user asks for less */
   @media (prefers-reduced-motion: reduce){
@@ -109,8 +114,18 @@
 
   /* fixed HUD readout (top-right) */
   .hud{position:absolute;top:clamp(20px,5vh,52px);right:clamp(24px,6vw,90px);text-align:right;font-family:'Space Mono',monospace;z-index:6;pointer-events:none;}
-  .readout-year{font-size:clamp(38px,3.8vw,64px);line-height:.92;letter-spacing:-0.02em;}
-  .readout-age{font-size:12px;letter-spacing:.24em;margin-top:8px;opacity:.6;}
+  .readout-year{font-size:clamp(38px,3.8vw,64px);line-height:1;letter-spacing:-0.02em;}
+  .readout-age{font-size:12px;letter-spacing:.24em;margin-top:10px;opacity:.6;}
+  /* odometer digits: each column shows one digit of a vertical reel, driven by scroll */
+  .odo{display:inline-flex;vertical-align:baseline;}
+  /* one digit tall (neighbours stay clipped out of view), with a soft edge fade so the
+     rolling digit eases in/out instead of hard-cutting at the column edges */
+  .odo-col{display:block;height:1em;overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 15%,#000 85%,transparent 100%);
+    mask-image:linear-gradient(to bottom,transparent 0,#000 15%,#000 85%,transparent 100%);}
+  .odo-reel{display:block;will-change:transform;}
+  .odo-d{display:flex;align-items:center;justify-content:center;height:1em;line-height:1;}
+  .age-num{display:inline-flex;align-items:center;}
 
   /* ground + foreground walker */
   .ground{position:absolute;left:0;right:0;bottom:11vh;height:13px;z-index:3;
@@ -161,8 +176,8 @@
 
       <!-- fixed HUD: live year / age ticker -->
       <div class="hud">
-        <div class="readout-year" id="yearText">2003</div>
-        <div class="readout-age" id="ageText">BORN · 2003</div>
+        <div class="readout-year"><span class="odo" id="yearOdo"></span></div>
+        <div class="readout-age"><span id="ageBorn">BORN · 2003</span><span class="age-num" id="ageNum" style="display:none;">AGE&nbsp;<span class="odo" id="ageOdo"></span></span></div>
       </div>
 
       <!-- horizontal track of scenes -->
@@ -385,8 +400,33 @@
   var walker = document.querySelector('.walker');
   var ctx = canvas.getContext('2d');
   var progressBar = document.getElementById('progressBar');
-  var yearTextEl = document.getElementById('yearText');
-  var ageTextEl = document.getElementById('ageText');
+  var ageBornEl = document.getElementById('ageBorn');
+  var ageNumEl = document.getElementById('ageNum');
+
+  // ---- odometer: per-digit vertical reels driven by the (continuous) scroll value ----
+  function buildOdo(el, n) {
+    el.innerHTML = '';
+    var reels = [];
+    for (var i = 0; i < n; i++) {
+      var col = document.createElement('span'); col.className = 'odo-col';
+      var reel = document.createElement('span'); reel.className = 'odo-reel';
+      for (var d = 0; d <= 10; d++) { var s = document.createElement('span'); s.className = 'odo-d'; s.textContent = d % 10; reel.appendChild(s); } // 0..9 then a repeated 0 for a seamless wrap
+      col.appendChild(reel); el.appendChild(col); reels.push(reel);
+    }
+    return reels;
+  }
+  function odoDigitPos(value, place) {
+    var P = Math.pow(10, place), scaled = value / P, fl = Math.floor(scaled);
+    var base = ((fl % 10) + 10) % 10, frac = scaled - fl, roll;
+    if (place === 0) roll = frac;                                              // units roll continuously
+    else { var w = 0.12; roll = frac > (1 - w) ? (frac - (1 - w)) / w : 0; }   // higher digits carry only near the wrap
+    return base + roll;
+  }
+  function setOdo(reels, value) {
+    for (var i = 0; i < reels.length; i++) reels[i].style.transform = 'translateY(' + (-odoDigitPos(value, reels.length - 1 - i)) + 'em)';
+  }
+  var yearReels = buildOdo(document.getElementById('yearOdo'), 4);
+  var ageReels = buildOdo(document.getElementById('ageOdo'), 2);
 
   var N = panels.length;           // scenes (intro + 6 chapters)
   var p = 0, target = 0;           // smoothed / raw horizontal progress 0..1
@@ -461,9 +501,12 @@
     }
 
     // live year / age ticker
-    var year = Math.round(tableAt(p, SECTION_YEAR)), age = year - 2003;
-    yearTextEl.textContent = '' + year;
-    ageTextEl.textContent = age <= 0 ? 'BORN · 2003' : 'AGE ' + pad(age);
+    var yearF = tableAt(p, SECTION_YEAR), ageF = yearF - 2003;
+    setOdo(yearReels, yearF);
+    var born = ageF < 1;
+    ageBornEl.style.display = born ? '' : 'none';
+    ageNumEl.style.display = born ? 'none' : '';
+    if (!born) setOdo(ageReels, ageF);
 
     // figure (walks + grows)
     drawFrame(Math.round(tableAt(p, SECTION_VT) * FPS) + 1);
