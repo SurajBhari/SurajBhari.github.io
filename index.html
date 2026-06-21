@@ -143,10 +143,10 @@
   .age-num{display:inline-flex;align-items:center;}
 
   /* ground + foreground walker */
-  .ground{position:absolute;left:0;right:0;bottom:6vh;height:13px;z-index:3;
+  .ground{position:absolute;left:0;right:0;bottom:0;height:13px;z-index:3;
     background:repeating-linear-gradient(90deg,rgba(21,18,12,.34) 0 2px,transparent 2px 48px);
     border-bottom:1px solid rgba(21,18,12,.34);}
-  .walker{position:absolute;left:50%;bottom:2vh;height:48vh;transform:translateX(-50%);z-index:4;pointer-events:none;}
+  .walker{position:absolute;left:50%;bottom:-4vh;height:48vh;transform:translateX(-50%);z-index:4;pointer-events:none;}
   /* no filter on the bare canvas (luma-key would render empty pixels solid black). */
   .walker canvas{height:100%;width:auto;display:block;}
   /* A CSS filter animation can't interpolate a list containing url(), so animating
@@ -161,8 +161,8 @@
     .hud{top:16px;right:18px;}
     .readout-year{font-size:30px;}
     .readout-age{font-size:10px;}
-    .walker{height:34vh;bottom:3vh;}
-    .ground{bottom:6vh;}
+    .walker{height:34vh;bottom:-3vh;}
+    .ground{bottom:0;}
     .gh-grid{grid-template-columns:1fr !important;}
     .demo-grid{grid-template-columns:1fr 1fr !important;}
     .showcase{padding:84px 22px !important;}
