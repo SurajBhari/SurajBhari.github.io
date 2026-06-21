@@ -55,6 +55,18 @@
   ::selection{background:#15120C;color:#F2EDE2;}
   @keyframes cuebob{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(8px);opacity:1}}
 
+  /* theme toggle: invert every colour on the page, transitioned.
+     hue-rotate keeps any colour content looking natural through the flip. */
+  html{transition:filter .6s ease;}
+  html.inverted{filter:invert(1) hue-rotate(180deg);}
+  .theme-toggle{position:fixed;top:18px;right:18px;z-index:60;width:34px;height:34px;border-radius:50%;
+    border:0;background:none;color:#15120C;cursor:pointer;padding:0;opacity:.32;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .35s ease;}
+  .theme-toggle:hover{transform:rotate(180deg);opacity:.85;}
+  .theme-toggle.off{opacity:0;pointer-events:none;}
+  .theme-toggle svg{width:15px;height:15px;display:block;}
+
   /* hover behaviours */
   .card{transition:background .25s,color .25s;}
   .card:hover{background:#15120C !important;color:#F2EDE2 !important;}
@@ -128,10 +140,10 @@
   .age-num{display:inline-flex;align-items:center;}
 
   /* ground + foreground walker */
-  .ground{position:absolute;left:0;right:0;bottom:11vh;height:13px;z-index:3;
+  .ground{position:absolute;left:0;right:0;bottom:6vh;height:13px;z-index:3;
     background:repeating-linear-gradient(90deg,rgba(21,18,12,.34) 0 2px,transparent 2px 48px);
     border-bottom:1px solid rgba(21,18,12,.34);}
-  .walker{position:absolute;left:50%;bottom:7vh;height:48vh;transform:translateX(-50%);z-index:4;pointer-events:none;}
+  .walker{position:absolute;left:50%;bottom:2vh;height:48vh;transform:translateX(-50%);z-index:4;pointer-events:none;}
   /* no filter on the bare canvas (luma-key would render empty pixels solid black). */
   .walker canvas{height:100%;width:auto;display:block;}
   /* A CSS filter animation can't interpolate a list containing url(), so animating
@@ -146,8 +158,8 @@
     .hud{top:16px;right:18px;}
     .readout-year{font-size:30px;}
     .readout-age{font-size:10px;}
-    .walker{height:34vh;bottom:8vh;}
-    .ground{bottom:11vh;}
+    .walker{height:34vh;bottom:3vh;}
+    .ground{bottom:6vh;}
     .gh-grid{grid-template-columns:1fr !important;}
     .demo-grid{grid-template-columns:1fr 1fr !important;}
     .showcase{padding:84px 22px !important;}
@@ -159,6 +171,10 @@
 </head>
 
 <body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Invert colours" aria-pressed="false" title="Invert colours">
+  <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M10 1.75 a8.25 8.25 0 0 1 0 16.5 z" fill="currentColor"></path></svg>
+</button>
+<script>(function(){var b=document.getElementById('themeToggle');b.addEventListener('click',function(){var on=document.documentElement.classList.toggle('inverted');b.setAttribute('aria-pressed',on);});})();</script>
 <div style="background:#F2EDE2;color:#15120C;font-family:'Newsreader',Georgia,serif;overflow-x:clip;position:relative;">
 
   <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true"><defs>
@@ -185,7 +201,6 @@
 
         <section class="hpanel">
           <div class="panel-inner">
-            <div class="eyebrow">A Life · Since 2003</div>
             <h1>Suraj<br><em>Bhari</em></h1>
             <p class="lede">A software engineer who builds tools for <em>streamers &amp; gamers</em>, usually to automate something I'd rather not do twice.</p>
             <p class="submono">Born 14 August 2003 · Rajasthan, India.</p>
@@ -254,7 +269,7 @@
 
       <!-- foreground walker (fixed, grows + walks with progress) -->
       <div class="walker">
-        <canvas id="figCanvas" width="320" height="315"></canvas>
+        <canvas id="figCanvas" width="419" height="315"></canvas>
       </div>
 
     </div>
@@ -400,6 +415,7 @@
   var walker = document.querySelector('.walker');
   var ctx = canvas.getContext('2d');
   var progressBar = document.getElementById('progressBar');
+  var themeToggle = document.getElementById('themeToggle');
   var ageBornEl = document.getElementById('ageBorn');
   var ageNumEl = document.getElementById('ageNum');
 
@@ -440,6 +456,7 @@
   var SECTION_YEAR = [2003, 2009, 2015, 2019, 2022, 2025, 2026];
 
   // ---- pencil-sketch frame sequence (canvas scrub) ----
+  // frames are pre-cropped 419x315 (figure tight, edges/watermark cleaned).
   var FRAME_COUNT = 240, FPS = 24, MAX_FRAME = 218;
   var imgs = new Array(FRAME_COUNT + 1), curFrame = -1, revealed = false;
   function fname(i) { return 'uploads/frames/f' + (i < 10 ? '00' + i : i < 100 ? '0' + i : '' + i) + '.webp'; }
@@ -449,10 +466,9 @@
     if (idx === curFrame) return;
     var im = imgs[idx];
     if (im && im.complete && im.naturalWidth) {
-      // source frames are 560px wide with faint pencil texture in the margins;
-      // crop the centre 320px band so only the figure shows (no side smudges).
+      // frames are already cropped tight to the figure (404x255) — draw the whole frame.
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(im, 120, 0, 320, im.naturalHeight, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(im, 0, 0, canvas.width, canvas.height);
       curFrame = idx;
       if (!revealed) { revealed = true; walker.classList.add('lit'); } // key in + run the 2s blur-to-focus
     }
@@ -515,6 +531,9 @@
     var sc = window.scrollY || window.pageYOffset;
     var docScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1;
     progressBar.style.width = (clamp01(sc / docScroll) * 100) + '%';
+
+    // theme toggle only lives at the very top of the page; it fades out once you scroll in
+    themeToggle.classList.toggle('off', sc > 40);
   }
 
   function onScroll() { target = compute(); }
