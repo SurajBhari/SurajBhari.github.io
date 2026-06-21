@@ -1,136 +1,477 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suraj AG Bhari </title>
-    <!-- Favicon -->
-    <link rel="icon" href="https://avatars0.githubusercontent.com/u/45149585" type="image/x-icon" />
-    <!-- Font Awesome icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css">
-    <!-- Core theme CSS -->
-    <link rel="stylesheet" href="style.css">
-  </head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suraj Bhari · A Life</title>
+<meta name="description" content="Suraj Bhari, a software engineer who builds tools for streamers & gamers. A life that grows up as you scroll.">
 
-  <body>
-    <!-- Parallax Pixel Background Animation -->
-    <section class="animated-background">
-      <div id="stars1"></div>
-      <div id="stars2"></div>
-      <div id="stars3"></div>
-    </section>
-    <!-- End of Parallax Pixel Background Animation -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <a id="profilePicture" href="#popup">
-      <img src="https://avatars0.githubusercontent.com/u/45149585" alt="Profile Picture">
+<script src="vendor/lenis.min.js"></script>
+
+<style>
+  html,body{margin:0;padding:0;background:#F2EDE2;}
+  /* hide the native scrollbar (scroll still works via wheel / touch / keys) */
+  html{scrollbar-width:none;-ms-overflow-style:none;}
+  html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
+  /* Lenis smooth-scroll */
+  html.lenis,html.lenis body{height:auto;}
+  .lenis.lenis-smooth{scroll-behavior:auto !important;}
+  .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain;}
+  .lenis.lenis-stopped{overflow:hidden;}
+  *{box-sizing:border-box;}
+  ::selection{background:#15120C;color:#F2EDE2;}
+  @keyframes cuebob{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(8px);opacity:1}}
+
+  /* hover behaviours */
+  .card{transition:background .25s,color .25s;}
+  .card:hover{background:#15120C !important;color:#F2EDE2 !important;}
+  .flink{transition:opacity .2s;}
+  .flink:hover{opacity:.5;}
+  .ss-logo{display:inline-block;background-color:currentColor;vertical-align:middle;
+    -webkit-mask:url(assets/streamsnip-mark.svg) center/contain no-repeat;
+    mask:url(assets/streamsnip-mark.svg) center/contain no-repeat;}
+
+  /* scroll-reveal for the vertical work + footer (motivated: sequences content into view) */
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* accessibility: collapse looping + reveal motion when the user asks for less */
+  @media (prefers-reduced-motion: reduce){
+    .cue-row .arrow{animation:none !important;}
+    .reveal{opacity:1 !important;transform:none !important;transition:none !important;}
+  }
+
+  /* ===== horizontal life-journey (side-scroller) ===== */
+  .journey-h{position:relative;}                 /* tall element; height set by JS to provide scroll distance */
+  .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#F2EDE2;}
+  .track{position:absolute;top:0;left:0;height:100%;display:flex;will-change:transform;z-index:2;}
+  .hpanel{position:relative;flex:none;width:100vw;height:100%;}
+  .panel-inner{position:absolute;left:clamp(24px,8vw,150px);top:14vh;max-width:min(540px,46vw);will-change:opacity,transform;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;opacity:.6;margin-bottom:22px;}
+  .panel-inner h1{font-family:'Newsreader',serif;font-weight:500;font-size:clamp(56px,8vw,128px);line-height:.9;letter-spacing:-0.035em;margin:0;}
+  .panel-inner h1 em{font-style:italic;font-weight:400;}
+  .panel-inner h2{font-family:'Newsreader',serif;font-weight:500;font-size:clamp(34px,4.6vw,68px);line-height:1.02;letter-spacing:-0.03em;margin:0 0 22px;}
+  .panel-inner p{font-size:clamp(17px,1.4vw,22px);line-height:1.55;margin:0;}
+  .panel-inner p.lede{font-size:clamp(19px,1.9vw,28px);line-height:1.4;max-width:28ch;margin:30px 0 0;}
+  .panel-inner em{font-style:italic;}
+  .submono{font-family:'Space Mono',monospace;font-size:13px;line-height:1.8;opacity:.62;margin:24px 0 0;max-width:48ch;}
+  .tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px;font-family:'Space Mono',monospace;font-size:12px;}
+  .tags span,.tags a{border:1px solid currentColor;padding:7px 13px;border-radius:2px;}
+  .tags a{color:inherit;text-decoration:none;transition:background .2s,color .2s;}
+  .tags a:hover{background:#15120C;color:#F2EDE2;}
+  /* inline content links in chapter copy */
+  a.ilink{color:inherit;text-decoration:none;border-bottom:1px solid rgba(21,18,12,.34);transition:border-color .2s;}
+  a.ilink:hover{border-color:#15120C;}
+  .cue-row{margin-top:40px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+  .cue-row .arrow{display:inline-block;animation:cuebob 1.6s ease-in-out infinite;margin-right:8px;}
+  .cue-row a{color:#15120C;text-decoration:none;border-bottom:1px solid rgba(21,18,12,.4);padding-bottom:3px;}
+
+  /* fixed HUD readout (top-right) */
+  .hud{position:absolute;top:clamp(20px,5vh,52px);right:clamp(24px,6vw,90px);text-align:right;font-family:'Space Mono',monospace;z-index:6;pointer-events:none;}
+  .readout-year{font-size:clamp(38px,3.8vw,64px);line-height:.92;letter-spacing:-0.02em;}
+  .readout-age{font-size:12px;letter-spacing:.24em;margin-top:8px;opacity:.6;}
+
+  /* ground + foreground walker */
+  .ground{position:absolute;left:0;right:0;bottom:11vh;height:13px;z-index:3;
+    background:repeating-linear-gradient(90deg,rgba(21,18,12,.34) 0 2px,transparent 2px 48px);
+    border-bottom:1px solid rgba(21,18,12,.34);}
+  .walker{position:absolute;left:50%;bottom:7vh;height:48vh;transform:translateX(-50%);z-index:4;pointer-events:none;}
+  .walker canvas{height:100%;width:auto;display:block;filter:url(#lumakey);}
+
+  @media (max-width:880px){
+    .panel-inner{left:22px;max-width:84vw;top:12vh;}
+    .hud{top:16px;right:18px;}
+    .readout-year{font-size:30px;}
+    .readout-age{font-size:10px;}
+    .walker{height:34vh;bottom:8vh;}
+    .ground{bottom:11vh;}
+    .gh-grid{grid-template-columns:1fr !important;}
+    .demo-grid{grid-template-columns:1fr 1fr !important;}
+    .showcase{padding:84px 22px !important;}
+    .showcase > div:first-child{margin-bottom:40px !important;}
+    .flagship-mark{display:none !important;}
+    .footwrap{padding:84px 22px 56px !important;}
+  }
+</style>
+</head>
+
+<body>
+<div style="background:#F2EDE2;color:#15120C;font-family:'Newsreader',Georgia,serif;overflow-x:clip;position:relative;">
+
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true"><defs>
+    <filter id="lumakey" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.9 -0.9 -0.9 0 2.05"></feColorMatrix>
+    </filter>
+  </defs></svg>
+
+  <div style="position:fixed;top:0;left:0;right:0;height:3px;z-index:50;background:transparent;">
+    <div id="progressBar" style="height:100%;background:#15120C;width:0%;"></div>
+  </div>
+
+  <div class="journey-h" id="journeyH">
+    <div class="stage" id="stage">
+
+      <!-- fixed HUD: live year / age ticker -->
+      <div class="hud">
+        <div class="readout-year" id="yearText">2003</div>
+        <div class="readout-age" id="ageText">BORN · 2003</div>
+      </div>
+
+      <!-- horizontal track of scenes -->
+      <div class="track" id="track">
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">A Life · Since 2003</div>
+            <h1>Suraj<br><em>Bhari</em></h1>
+            <p class="lede">A software engineer who builds tools for <em>streamers &amp; gamers</em>, usually to automate something I'd rather not do twice.</p>
+            <p class="submono">Born 14 August 2003 · Rajasthan, India.</p>
+            <div class="cue-row"><span class="arrow" aria-hidden="true">→</span><a href="Suraj_Bhari_Resume.pdf" target="_blank" rel="noopener">RÉSUMÉ · PDF ↓</a></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">2009 · Age 6 · Dungargarh</div>
+            <h2>The first screen.</h2>
+            <p>I sat in front of a computer for the first time at six. The first world I remember getting lost in was <a class="ilink" href="https://en.wikipedia.org/wiki/Jazz_Jackrabbit_2" target="_blank" rel="noopener"><em>Jazz Jackrabbit 2</em></a>: a green rabbit, a side-scroller, and an afternoon that quietly turned into years.</p>
+            <div class="tags"><span>First computer · age 6</span><span>Jazz Jackrabbit 2</span><span>Rajasthan</span></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">2008-2021 · School</div>
+            <h2>Three schools,<br>one curiosity.</h2>
+            <p>Schooling took me across three places: <a class="ilink" href="https://sesomu.org/" target="_blank" rel="noopener">Sesomu School</a> in Dungargarh from nursery to 2nd, <a class="ilink" href="https://www.instagram.com/lyallpublicschool/" target="_blank" rel="noopener">Lyall Public School</a> through 10th, and <a class="ilink" href="https://rsvschools.com/" target="_blank" rel="noopener">R.S.V. Senior Secondary</a> for 11th and 12th. By the time I finished in 2021, I cared more about how the machine in front of me worked than about the marks for describing it.</p>
+            <div class="tags"><a href="https://sesomu.org/" target="_blank" rel="noopener">Sesomu School</a><a href="https://www.instagram.com/lyallpublicschool/" target="_blank" rel="noopener">Lyall Public School</a><a href="https://rsvschools.com/" target="_blank" rel="noopener">R.S.V. Sr. Sec. School</a><span>Class of 2021</span></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">2019 · Age 16</div>
+            <h2>First lines of code.</h2>
+            <p>At sixteen I wrote my <a class="ilink" href="https://github.com/SurajBhari/vip_manager" target="_blank" rel="noopener">first lines of <em>Python</em></a>: small scripts to automate things that only took a couple of minutes by hand. Spending an hour to save two minutes made no sense and complete sense at the same time, and I've been doing it ever since.</p>
+            <div class="tags"><span>Python</span><span>Automation</span><span>Self-taught</span></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">2021-2025 · GEHU, Dehradun</div>
+            <h2>B.Tech, and a product.</h2>
+            <p>I studied Computer Science at <a class="ilink" href="https://gehu.ac.in/" target="_blank" rel="noopener">Graphic Era Hill University</a>. At the end of my first year I shipped <em>StreamSnip</em>, one chat command that lets a streamer's viewers clip a live moment. It's now used by more than 18,000 people.</p>
+            <div class="tags"><span>B.Tech Computer Science</span><span>StreamSnip launched · 2022</span><span>Flask · JS · AWS</span></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">Now · 2025</div>
+            <h2>Software engineer<br>&amp; maker.</h2>
+            <p>Today I build practical tools end-to-end: scrape the data, wrap it in a Flask backend, put an extension or overlay on top, and host it on my own hardware. Most of it lives around live streaming, YouTube and self-hosting. <em>Sixty-four public repositories, nearly all built to fix something that was annoying me at the time.</em></p>
+            <div class="tags"><span>64 repositories</span><span>StreamSnip ecosystem</span><span>Self-hosted</span><span>Streamers &amp; gamers</span></div>
+          </div>
+        </section>
+
+        <section class="hpanel">
+          <div class="panel-inner">
+            <div class="eyebrow">Next · 2026</div>
+            <h2>An MBA,<br>and what's next.</h2>
+            <p>This year I start an MBA at <em>Symbiosis</em>, turning the same build-it-myself habit toward the business side of products, not just the code that runs them.</p>
+            <div class="tags"><span>MBA · Symbiosis University</span><span>Building, still</span></div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ground line -->
+      <div class="ground" id="ground"></div>
+
+      <!-- foreground walker (fixed, grows + walks with progress) -->
+      <div class="walker">
+        <canvas id="figCanvas" width="320" height="315"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+  <section class="showcase" style="padding:130px 6vw 110px;max-width:1480px;margin:0 auto;border-top:1px solid rgba(21,18,12,.2);">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;margin-bottom:60px;">
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:clamp(40px,6vw,86px);line-height:.95;letter-spacing:-0.03em;margin:0;">Selected work.</h2>
+      <a href="https://github.com/SurajBhari" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.12em;color:#15120C;text-decoration:none;border-bottom:1px solid #15120C;padding-bottom:3px;">64 REPOS ON GITHUB →</a>
+    </div>
+
+    <a class="card flagship reveal" href="https://streamsnip.com" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:clamp(28px,5vw,72px);text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:clamp(28px,4vw,52px);margin-bottom:18px;">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <span class="ss-logo" style="width:28px;height:28px;flex:none;"></span>
+          <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;opacity:.7;">FLAGSHIP · STREAMSNIP ECOSYSTEM</span>
+        </div>
+        <div style="font-family:'Newsreader',serif;font-size:clamp(30px,3.4vw,52px);line-height:1.04;letter-spacing:-0.02em;max-width:22ch;">Viewers clip a live stream moment with one chat command. No clipping software.</div>
+        <div style="display:flex;gap:18px 28px;flex-wrap:wrap;margin-top:28px;font-family:'Space Mono',monospace;font-size:13px;">
+          <span style="border-bottom:1px solid currentColor;padding-bottom:2px;">streamsnip.com →</span>
+          <span style="opacity:.6;">18,000+ users</span>
+          <span style="opacity:.6;">Flask · JavaScript · PostgreSQL · AWS</span>
+        </div>
+      </div>
+      <span class="ss-logo flagship-mark" style="width:clamp(120px,14vw,180px);height:clamp(120px,14vw,180px);flex:none;opacity:.92;"></span>
     </a>
 
-    <div class="overlay" id="popup">
-      <div class="popup">
-        <div class="popup-photo">
-          <a href="https://avatars0.githubusercontent.com/u/45149585" target="_blank">
-            <img src="https://avatars0.githubusercontent.com/u/45149585" alt="Profile Picture">
-          </a>
-        </div>
-        <a class="popup-close" onclick="history.back()">&times;</a>
+    <div class="gh-grid reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;">
+      <a class="card" href="https://github.com/SurajBhari/streamsnip_extension" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:24px;">
+        <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;">streamsnip_extension</div>
+        <div style="font-size:17px;line-height:1.4;flex:1;">Chrome extension that draws clip markers right on the YouTube scrubber.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">JAVASCRIPT</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/streamsnip_downloader" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:24px;">
+        <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;">streamsnip_downloader</div>
+        <div style="font-size:17px;line-height:1.4;flex:1;">CLI that pulls clip segments down as real video via yt-dlp.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">PYTHON</div>
+      </a>
+      <a class="card" href="https://stats.streamsnip.com" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:24px;">
+        <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;">StreamStats</div>
+        <div style="font-size:17px;line-height:1.4;flex:1;">Real-time YouTube live-chat analytics, built on Flask, PostgreSQL &amp; Three.js.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">LIVE · stats.streamsnip.com</div>
+      </a>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;opacity:.6;margin:46px 0 18px;">LIVE DEMOS · FREE TIER, FIRST LOAD ~30s</div>
+    <div class="demo-grid reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px;">
+      <a class="card" href="https://pokegame-axf3.onrender.com" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">Pokémon Judgment</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">A stat-guessing Pokémon battler. Bet which stat wins.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;border-bottom:1px solid currentColor;align-self:flex-start;padding-bottom:1px;">play →</div>
+      </a>
+      <a class="card" href="https://mini-search-engine-5oyp.onrender.com" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">Sadela Movie Search</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Search ~9,000 films by title, genre, year or plot, with posters.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;border-bottom:1px solid currentColor;align-self:flex-start;padding-bottom:1px;">search →</div>
+      </a>
+      <a class="card" href="https://mini-linker.onrender.com" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">Mini Linker</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Turn a channel ID into permanent links to its latest video / Short / stream.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;border-bottom:1px solid currentColor;align-self:flex-start;padding-bottom:1px;">open →</div>
+      </a>
+      <a class="card" href="https://real-estate-managment.onrender.com" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">Real-Estate CRM</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">A plot-sales manager with 2FA. Demo login is pre-filled.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;border-bottom:1px solid currentColor;align-self:flex-start;padding-bottom:1px;">open →</div>
+      </a>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;opacity:.6;margin:46px 0 18px;">MORE THINGS I'VE BUILT</div>
+    <div class="gh-grid reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+      <a class="card" href="https://github.com/SurajBhari/cleanchat" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">cleanchat</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Live-chat filter extension with streamer and moderator modes.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">JAVASCRIPT</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/clip_finder" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">clip_finder</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Find exactly when a word was said in a YouTube livestream chat.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">PYTHON</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/playlist-importer" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">playlist-importer</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Move playlists between YouTube Music and Spotify, both ways.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">PYTHON</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/hand_cricket" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">hand_cricket</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">Play hand cricket against your webcam using OpenCV.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">PYTHON</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/proxy_system_ec2" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">proxy_system_ec2</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">A rotating-IP proxy pool that spins itself up on AWS.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">PYTHON · AWS</div>
+      </a>
+      <a class="card" href="https://github.com/SurajBhari/configs" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:8px;text-decoration:none;color:#15120C;background:#F2EDE2;border:1px solid #15120C;padding:22px;">
+        <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;">configs ★16</div>
+        <div style="font-size:16px;line-height:1.35;flex:1;">SourceMod execute configs for CS:GO practice servers.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;opacity:.6;letter-spacing:.1em;">CS:GO</div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footwrap" style="background:#15120C;color:#F2EDE2;padding:120px 6vw 70px;">
+    <div class="reveal" style="max-width:1480px;margin:0 auto;">
+      <div style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.28em;opacity:.6;margin-bottom:28px;">LET'S CONNECT</div>
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:clamp(44px,8vw,120px);line-height:.92;letter-spacing:-0.03em;margin:0 0 60px;">Find me<br><em style="font-style:italic;">everywhere.</em></h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2px;border-top:1px solid rgba(242,237,226,.25);">
+        <a class="flink" href="https://streamsnip.com" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span style="display:flex;align-items:center;gap:9px;"><span class="ss-logo" style="width:15px;height:15px;flex:none;"></span>StreamSnip</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://stats.streamsnip.com" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>StreamStats</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://github.com/SurajBhari" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>GitHub</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://www.linkedin.com/in/suraj-bhari-323655198/" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>LinkedIn</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://x.com/SurajBhari" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>X · @SurajBhari</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://youtube.com/@suraj_ag" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>YouTube · @suraj_ag</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://instagram.com/suraj._.1436" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>Instagram</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="https://discord.gg/2XVBWK99Vy" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>Discord</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="mailto:surajbhari159@gmail.com" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>Email</span><span style="opacity:.55;">↗</span></a>
+        <a class="flink" href="Suraj_Bhari_Resume.pdf" target="_blank" rel="noopener" style="display:flex;justify-content:space-between;align-items:center;padding:26px 4px;text-decoration:none;color:#F2EDE2;border-bottom:1px solid rgba(242,237,226,.25);font-family:'Space Mono',monospace;font-size:15px;"><span>Résumé · PDF</span><span style="opacity:.55;">↓</span></a>
+      </div>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-top:70px;font-family:'Space Mono',monospace;font-size:12px;opacity:.5;letter-spacing:.08em;">
+        <span>SURAJ BHARI · BIKANER → DEHRADUN → NEXT</span>
+        <span>© 2026 · SELF-HOSTED</span>
       </div>
     </div>
+  </footer>
 
-    <div id="userName">
-      Suraj Bhari<br>
-      AG
-    </div>
+</div>
 
-    <div id="links">
-      <a class="section">
-        <i class="fab">&nbsp;</i>My Socials
-      </a>
-      <a class="link" href="https://github.com/surajbhari" target="_blank">
-        <i class="fab fa-github">&nbsp;</i>Github
-      </a>
-      <a class="link" href="https://www.linkedin.com/in/suraj-bhari-323655198/" target="_blank">
-        <i class="fab fa-linkedin">&nbsp;</i>Linkedin
-      </a>
-      <a class="link" href="https://www.instagram.com/suraj._.1436/" target="_blank">
-        <i class="fab fa-instagram">&nbsp;</i>Instagram
-      </a>
-      <a class="link" href="https://x.com/SurajBhari" target="_blank">
-        <i class="fab fa-x-twitter">&nbsp;</i>X
-      </a>
-      <a class="link" href="https://www.youtube.com/@suraj_ag" target="_blank">
-        <i class="fab fa-youtube">&nbsp;</i>Youtube
-      </a>
-      <a class="link" href="https://steamcommunity.com/id/AG_1436" target="_blank">
-        <i class="fab fa-steam">&nbsp;</i>Steam
-      </a>
-      <a class="link" href="https://discord.gg/2XVBWK99Vy" target="_blank">
-        <i class="fab fa-discord">&nbsp;</i>Discord
-      </a>
-      
-      <a class="section">
-        <i class="fab">&nbsp;</i>Other Useful Stuff
-      </a>
+<script>
+(function () {
+  "use strict";
 
-      <a class="link" href="https://suraj.cronitorstatus.com/" target="_blank">
-        <i class="fa-solid fa-arrow-up-right-dots">&nbsp;</i>Status | Projects
-      </a>
-      <div style="display: flex; justify-content: center;">
-        <table style="text-align: center;">
-            <tr class="link">
-                <td>
-                    <a class="plink" href="https://music.youtube.com/playlist?list=PLKaCicYQLYaqr7aAVbcwgRmMRfqtj58CE&si=Sq5-tty1IWJ1EG5f" target="_blank">
-                        <i class="fab fa-itunes-note">&nbsp;</i>Hindi Playlist
-                    </a>
-                </td>
-                <td>
-                    <a class="plink" href="https://music.youtube.com/playlist?list=PLKaCicYQLYaqAb11zTM5Snzro_1nyIUQ6&si=Gsxz3ISQKvQ0syNB" target="_blank">
-                        <i class="fab fa-itunes-note">&nbsp;</i>English Playlist
-                    </a>
-                </td>
-                <td>
-                    <a class="plink" href="https://music.youtube.com/playlist?list=PLKaCicYQLYar482ZCpRCL6rCpoLoWtijG&si=0XGM8FsSwM_xVV8l" target="_blank">
-                        <i class="fab fa-itunes-note">&nbsp;</i>Punjabi Playlist
-                    </a>
-                </td>
-                <td>
-                  <a class="plink" href="https://music.youtube.com/playlist?list=PLJuNJ9D7WMzsxprFtSdsFuzkek9Ilk90o&si=eTf_hks5S4Tg07AN" target="_blank">
-                      <i class="fab fa-itunes-note">&nbsp;</i>Rajasthani Playlist
-                  </a>
-              </td>
-            </tr>
-        </table>
-    </div>    
-      <table>
-        <tr class="link">
-          <td>
-            <a class="plink" href="https://music.youtube.com/playlist?list=PLKaCicYQLYaqTO-hCm7YeZ-u_doeoGSLU&si=UtTsTWuYFc0EFlnf" target="_blank">
-              <i class="fab fa-itunes-note">&nbsp;</i>2021 Playlist
-            </a>
-          </td>
-          <td>
-            <a class="plink" href="https://music.youtube.com/playlist?list=LRYROqxT-lOUE0_hmfLs6hQxChiwYizlZ87DQ&si=ykzUFuj5qTFJRoCR" target="_blank">
-              <i class="fab fa-itunes-note">&nbsp;</i>2022 Playlist
-            </a> 
-          </td>
-          <td>
-            <a class="plink" href="https://music.youtube.com/playlist?list=LRYRHGKYe2dQ7B2E0DHL6WwZ8cvgeZ5WSY3q3&si=-X93MirGRWrQmc26" target="_blank">
-              <i class="fab fa-itunes-note">&nbsp;</i>2023 Playlist
-            </a>
-          </td>
-          <td>
-            <a class="plink" href="https://music.youtube.com/playlist?list=LRYRLFsmp68fWdMzF8lYDyTw5508Ry1uNH9Vj&si=jzf4lHUI0LWB44y5" target="_blank">
-              <i class="fab fa-itunes-note">&nbsp;</i>2024 Playlist
-            </a>
-          </td>
-          <td>
-            <a class="plink" href="https://music.youtube.com/playlist?list=PLxL5OlVr2gOVgG4yVeEVlG26b_0RQTEq4&si=hBDSqjH_FXuRrOW3" target="_blank">
-              <i class="fab fa-itunes-note">&nbsp;</i>OG's By Rahul
-            </a>
-          </td>
-      </tr>
-      </table>
-    </div>
+  var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SMOOTHING = REDUCE ? 1 : 0.12; // reduced-motion: snap to scroll, no floaty easing
 
-    <div id="hashtag">Viva la Vida</div>
-  </body>
+  var journeyH = document.getElementById('journeyH');
+  var stage = document.getElementById('stage');
+  var track = document.getElementById('track');
+  var panels = [].slice.call(track.querySelectorAll('.hpanel'));
+  var ground = document.getElementById('ground');
+  var canvas = document.getElementById('figCanvas');
+  var ctx = canvas.getContext('2d');
+  var progressBar = document.getElementById('progressBar');
+  var yearTextEl = document.getElementById('yearText');
+  var ageTextEl = document.getElementById('ageText');
+
+  var N = panels.length;           // scenes (intro + 6 chapters)
+  var p = 0, target = 0;           // smoothed / raw horizontal progress 0..1
+  var maxX = 1, vw = 0;            // horizontal travel (px), stage width
+
+  // ---- figure timeline: each scene maps to a video time (age) + a calendar year ----
+  // panels are equal width, so scene i is centred at p = i/(N-1).
+  //   intro 2003 -> toddler(2.0s) · 2009 -> child(3.2) · school 2015 -> schoolkid(4.5)
+  //   2019 -> teen(7.0) · 2022 -> young adult(8.0) · 2025 -> adult(8.5) · 2026 -> bearded(9.0)
+  var SECTION_VT   = [2.7, 3.4, 4.6, 7.0, 8.0, 8.5, 9.0];
+  var SECTION_YEAR = [2003, 2009, 2015, 2019, 2022, 2025, 2026];
+
+  // ---- pencil-sketch frame sequence (canvas scrub) ----
+  var FRAME_COUNT = 240, FPS = 24, MAX_FRAME = 218;
+  var imgs = new Array(FRAME_COUNT + 1), curFrame = -1;
+  function fname(i) { return 'uploads/frames/f' + (i < 10 ? '00' + i : i < 100 ? '0' + i : '' + i) + '.webp'; }
+  function preloadFrames() { for (var i = 1; i <= FRAME_COUNT; i++) { var im = new Image(); im.src = fname(i); imgs[i] = im; } }
+  function drawFrame(idx) {
+    if (idx < 1) idx = 1; if (idx > MAX_FRAME) idx = MAX_FRAME;
+    if (idx === curFrame) return;
+    var im = imgs[idx];
+    if (im && im.complete && im.naturalWidth) {
+      // source frames are 560px wide with faint pencil texture in the margins;
+      // crop the centre 320px band so only the figure shows (no side smudges).
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(im, 120, 0, 320, im.naturalHeight, 0, 0, canvas.width, canvas.height);
+      curFrame = idx;
+    }
+  }
+
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  // even-spacing lookup: scene i lives at p = i/(N-1)
+  function tableAt(p, tbl) {
+    var x = p * (N - 1), i = Math.floor(x);
+    if (i < 0) i = 0; if (i > N - 2) i = N - 2;
+    return lerp(tbl[i], tbl[i + 1], x - i);
+  }
+
+  // size the panels to the viewport, derive horizontal travel, and stretch the
+  // spacer so 1px of vertical scroll == 1px of horizontal walk (natural feel).
+  function measure() {
+    vw = stage.clientWidth;
+    for (var i = 0; i < N; i++) panels[i].style.width = vw + 'px';
+    maxX = (N - 1) * vw || 1;
+    journeyH.style.height = (maxX + window.innerHeight) + 'px';
+  }
+
+  // horizontal progress = how far we've scrolled through the (pinned) journey
+  function compute() {
+    var total = journeyH.offsetHeight - window.innerHeight;
+    if (total <= 0) return 0;
+    return clamp01((-journeyH.getBoundingClientRect().top) / total);
+  }
+
+  function render() {
+    // slide the world left
+    track.style.transform = 'translate3d(' + (-p * maxX) + 'px,0,0)';
+    ground.style.backgroundPositionX = (-p * maxX) + 'px';
+
+    // fade scenes in/out by distance from their centre, with a small vertical drift
+    var step = 1 / (N - 1);
+    for (var i = 0; i < N; i++) {
+      var d = Math.abs(p - i * step) / step;          // 0 at centre, 1 at neighbour
+      var op = clamp01(1 - Math.max(0, d - 0.1) / 0.5);
+      var inner = panels[i].firstElementChild;
+      inner.style.opacity = op;
+      inner.style.transform = REDUCE ? 'none' : 'translateY(' + ((1 - op) * -16) + 'px)';
+    }
+
+    // live year / age ticker
+    var year = Math.round(tableAt(p, SECTION_YEAR)), age = year - 2003;
+    yearTextEl.textContent = '' + year;
+    ageTextEl.textContent = age <= 0 ? 'BORN · 2003' : 'AGE ' + pad(age);
+
+    // figure (walks + grows)
+    drawFrame(Math.round(tableAt(p, SECTION_VT) * FPS) + 1);
+
+    // top bar tracks overall page scroll (through the work section + footer too)
+    var sc = window.scrollY || window.pageYOffset;
+    var docScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+    progressBar.style.width = (clamp01(sc / docScroll) * 100) + '%';
+  }
+
+  function onScroll() { target = compute(); }
+  function onResize() { measure(); onScroll(); }
+
+  function loop() {
+    p += (target - p) * SMOOTHING;
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  // Momentum smooth-scroll (Lenis): vertical scroll drives the horizontal walk.
+  // Skipped under reduced-motion so the page uses plain native scroll.
+  function startLenis() {
+    if (REDUCE || !window.Lenis) return;
+    var lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1, smoothWheel: true });
+    function lraf(t) { lenis.raf(t); requestAnimationFrame(lraf); }
+    requestAnimationFrame(lraf);
+    lenis.on('scroll', onScroll);
+  }
+
+  // Scroll-reveal for the vertical work + footer (IntersectionObserver, not scroll listeners).
+  function startReveals() {
+    var els = [].slice.call(document.querySelectorAll('.reveal'));
+    if (REDUCE || !('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
+  }
+
+  preloadFrames();
+  var firstFrame = Math.round(SECTION_VT[0] * FPS) + 1;
+  if (imgs[firstFrame]) imgs[firstFrame].addEventListener('load', function () { drawFrame(curFrame < 1 ? firstFrame : curFrame); });
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResize);
+
+  measure();
+  setTimeout(function () { measure(); onScroll(); }, 80);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); onScroll(); });
+  onScroll();
+  startLenis();
+  startReveals();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
 </html>

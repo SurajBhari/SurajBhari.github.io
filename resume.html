@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Suraj Bhari — Résumé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #F2EDE2;
+    color: #15120C;
+    font-family: 'Newsreader', Georgia, serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page { width: 210mm; min-height: 297mm; padding: 18mm 17mm 16mm; margin: 0 auto; }
+
+  .mono { font-family: 'Space Mono', monospace; }
+
+  /* header */
+  header { border-bottom: 1px solid rgba(21,18,12,.28); padding-bottom: 16px; margin-bottom: 22px; }
+  h1 { font-weight: 500; font-size: 46px; line-height: .95; letter-spacing: -0.03em; margin: 0; }
+  h1 em { font-style: italic; font-weight: 400; }
+  .role { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .24em; text-transform: uppercase; opacity: .6; margin-top: 12px; }
+  .contact { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .contact span { opacity: .8; }
+
+  /* layout */
+  .body { display: grid; grid-template-columns: 1.55fr 1fr; gap: 30px; }
+  .col-r { border-left: 1px solid rgba(21,18,12,.18); padding-left: 26px; }
+
+  h2 { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; opacity: .55; margin: 0 0 14px; }
+  section { margin-bottom: 26px; }
+  section:last-child { margin-bottom: 0; }
+
+  p.profile { font-size: 14.5px; line-height: 1.55; margin: 0; }
+  p.profile em { font-style: italic; }
+
+  .proj { margin-bottom: 18px; }
+  .proj:last-child { margin-bottom: 0; }
+  .proj-head { display: flex; align-items: center; gap: 9px; }
+  .proj-title { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 14px; }
+  .ss-logo { display: inline-block; width: 15px; height: 15px; flex: none; background-color: #15120C;
+    -webkit-mask: url(assets/streamsnip-mark.svg) center/contain no-repeat;
+    mask: url(assets/streamsnip-mark.svg) center/contain no-repeat; }
+  .stack { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .06em; opacity: .55; margin: 5px 0 8px; }
+  .proj p { font-size: 13.5px; line-height: 1.5; margin: 0; }
+  .proj .meta { font-family: 'Space Mono', monospace; font-size: 10.5px; opacity: .6; margin-top: 6px; }
+
+  .skill-group { margin-bottom: 13px; }
+  .skill-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; opacity: .5; margin-bottom: 3px; }
+  .skill-val { font-size: 13.5px; line-height: 1.45; }
+
+  .edu { margin-bottom: 14px; }
+  .edu .yr { font-family: 'Space Mono', monospace; font-size: 10.5px; opacity: .6; }
+  .edu .deg { font-size: 13.5px; line-height: 1.35; margin-top: 2px; }
+  .edu .deg strong { font-weight: 600; }
+  .edu .where { font-size: 12.5px; opacity: .75; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-family: 'Space Mono', monospace; font-size: 10.5px; border: 1px solid rgba(21,18,12,.4); border-radius: 2px; padding: 4px 8px; }
+
+  .foot { margin-top: 22px; padding-top: 12px; border-top: 1px solid rgba(21,18,12,.18); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .12em; opacity: .5; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Suraj <em>Bhari</em></h1>
+    <div class="role">Software Engineer · Backend &amp; Automation</div>
+    <div class="contact">
+      <span>Bikaner → Dehradun, India</span>
+      <span>surajbhari159@gmail.com</span>
+      <span>github.com/SurajBhari</span>
+      <span>streamsnip.com</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <div class="col-l">
+      <section>
+        <h2>Profile</h2>
+        <p class="profile">Computer Science graduate who builds backend systems, media-processing pipelines and analytics tools — with a bias toward <em>automation</em> and toward shipping things people actually use. Most of my work lives around live streaming, YouTube and self-hosting, and I'm increasingly interested in pointing the same data-driven systems at business operations.</p>
+      </section>
+
+      <section>
+        <h2>Selected Projects</h2>
+
+        <div class="proj">
+          <div class="proj-head"><span class="ss-logo"></span><span class="proj-title">StreamSnip</span></div>
+          <div class="stack">FLASK · POSTGRESQL · PYTHON · FFMPEG · YT-DLP · AWS</div>
+          <p>A clipping platform for streamers: one chat command lets a streamer's viewers clip a live moment — no clipping software. Built the scalable backend and media-processing pipeline, plus clip discovery and recommendation.</p>
+          <div class="meta">18,000+ users · streamsnip.com</div>
+        </div>
+
+        <div class="proj">
+          <div class="proj-head"><span class="proj-title">StreamStats</span></div>
+          <div class="stack">FLASK · POSTGRESQL · THREE.JS</div>
+          <p>Real-time YouTube live-chat analytics — ingesting and visualising chat activity from live streams as it happens.</p>
+          <div class="meta">Live · stats.streamsnip.com</div>
+        </div>
+
+        <div class="proj">
+          <div class="proj-head"><span class="proj-title">Real-Estate Management System</span></div>
+          <div class="stack">FLASK · SQLITE · JAVASCRIPT · HTML/CSS</div>
+          <p>An internal platform for property sales — billing, incentives, reporting and transaction tracking — with 2FA login, built to simplify day-to-day business workflows.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-r">
+      <section>
+        <h2>Technical Skills</h2>
+        <div class="skill-group"><div class="skill-label">Languages</div><div class="skill-val">Python, JavaScript, C, C++, SourcePawn</div></div>
+        <div class="skill-group"><div class="skill-label">Web &amp; Frameworks</div><div class="skill-val">Flask, HTML, Bootstrap, Chart.js, Three.js</div></div>
+        <div class="skill-group"><div class="skill-label">Databases</div><div class="skill-val">PostgreSQL, MySQL, SQLite</div></div>
+        <div class="skill-group"><div class="skill-label">Tools</div><div class="skill-val">Git, Linux, FFmpeg, yt-dlp, AWS</div></div>
+      </section>
+
+      <section>
+        <h2>Education</h2>
+        <div class="edu">
+          <div class="yr">2026 — (incoming)</div>
+          <div class="deg"><strong>MBA</strong></div>
+          <div class="where">Symbiosis</div>
+        </div>
+        <div class="edu">
+          <div class="yr">2021 — 2025</div>
+          <div class="deg"><strong>B.Tech</strong>, Computer Science &amp; Engineering</div>
+          <div class="where">Graphic Era Hill University, Dehradun · CGPA 7.2</div>
+        </div>
+        <div class="edu">
+          <div class="yr">2021</div>
+          <div class="deg">Class XII</div>
+          <div class="where">R.S.V., Bikaner · ~70%</div>
+        </div>
+        <div class="edu">
+          <div class="yr">2019</div>
+          <div class="deg">Class X</div>
+          <div class="where">Lyall Public School, Bikaner · ~75%</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Strengths</h2>
+        <div class="tags">
+          <span class="tag">Problem solving</span>
+          <span class="tag">Backend dev</span>
+          <span class="tag">Analytical thinking</span>
+          <span class="tag">Databases</span>
+          <span class="tag">Quick learner</span>
+          <span class="tag">Collaboration</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Languages</h2>
+        <div class="skill-val">English · Hindi</div>
+      </section>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <span>SURAJ BHARI · SOFTWARE ENGINEER</span>
+    <span>UPDATED JUNE 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
