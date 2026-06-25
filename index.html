@@ -182,7 +182,11 @@
 
   <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true"><defs>
     <filter id="lumakey" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
-      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.9 -0.9 -0.9 0 2.05"></feColorMatrix>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.9 -0.9 -0.9 0 2.05" result="keyed"></feColorMatrix>
+      <!-- the matrix's +2.05 alpha bias maps zero/transparent input to opaque black; at sub-pixel
+           canvas edges that leaves a 1px black hairline (visible only at some zoom/DPR). clip the
+           keyed result back inside the source's own alpha so the spurious edge can't show. -->
+      <feComposite in="keyed" in2="SourceGraphic" operator="in"></feComposite>
     </filter>
   </defs></svg>
 
