@@ -63,20 +63,24 @@
     border:0;background:none;color:#15120C;cursor:pointer;padding:0;opacity:.32;
     display:flex;align-items:center;justify-content:center;
     transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .35s ease;}
-  .theme-toggle:hover{transform:rotate(180deg);opacity:.85;}
+  @media (hover:hover){.theme-toggle:hover{transform:rotate(180deg);opacity:.85;}}
   .theme-toggle.off{opacity:0;pointer-events:none;}
   .theme-toggle svg{width:15px;height:15px;display:block;}
 
   /* hover behaviours */
   .card{transition:background .25s,color .25s;}
-  .card:hover{background:#15120C !important;color:#F2EDE2 !important;}
   .card{transition:background .25s,color .25s,transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s ease;}
-  .card:hover{box-shadow:0 16px 34px rgba(21,18,12,.18);}
+  /* hover-only so a tap on a touch screen doesn't leave the card stuck inverted */
+  @media (hover:hover){
+    .card:hover{background:#15120C !important;color:#F2EDE2 !important;box-shadow:0 16px 34px rgba(21,18,12,.18);}
+  }
+  .card:active{background:#15120C !important;color:#F2EDE2 !important;}
   /* the flagship also has .reveal, whose transition would otherwise shadow .card's and make the
      hover invert instant; this higher-specificity rule transitions both the reveal and the hover */
   .card.reveal{transition:background .25s,color .25s,box-shadow .4s ease,opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1);}
   .flink{transition:opacity .2s;}
-  .flink:hover{opacity:.5;}
+  @media (hover:hover){.flink:hover{opacity:.5;}}
+  .flink:active{opacity:.5;}
   .ss-logo{display:inline-block;background-color:currentColor;vertical-align:middle;
     -webkit-mask:url(assets/streamsnip-mark.svg) center/contain no-repeat;
     mask:url(assets/streamsnip-mark.svg) center/contain no-repeat;}
@@ -116,10 +120,10 @@
   .tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px;font-family:'Space Mono',monospace;font-size:12px;}
   .tags span,.tags a{border:1px solid currentColor;padding:7px 13px;border-radius:2px;}
   .tags a{color:inherit;text-decoration:none;transition:background .2s,color .2s;}
-  .tags a:hover{background:#15120C;color:#F2EDE2;}
+  @media (hover:hover){.tags a:hover{background:#15120C;color:#F2EDE2;}}
   /* inline content links in chapter copy */
   a.ilink{color:inherit;text-decoration:none;border-bottom:1px solid rgba(21,18,12,.34);transition:border-color .2s;}
-  a.ilink:hover{border-color:#15120C;}
+  @media (hover:hover){a.ilink:hover{border-color:#15120C;}}
   .cue-row{margin-top:40px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
   .cue-row .arrow{display:inline-block;animation:cuebob 1.6s ease-in-out infinite;margin-right:8px;}
   .cue-row a{color:#15120C;text-decoration:none;border-bottom:1px solid rgba(21,18,12,.4);padding-bottom:3px;}
@@ -157,11 +161,25 @@
   .walker.lit{animation:sketchFocus 1s linear;}
 
   @media (max-width:880px){
-    .panel-inner{left:22px;max-width:84vw;top:12vh;}
-    .hud{top:16px;right:18px;}
+    /* the theme toggle sits in the top-right corner, so the HUD steps left of it
+       (vertically centred on the toggle) instead of sliding underneath it */
+    .theme-toggle{top:14px;right:12px;width:40px;height:40px;}
+    .hud{top:18px;right:58px;}
     .readout-year{font-size:30px;}
-    .readout-age{font-size:10px;}
-    .walker{height:34vh;bottom:-3vh;}
+    .readout-age{font-size:10px;margin-top:8px;}
+    /* chapter copy: tighter type so text + tags clear the walker at the bottom */
+    .panel-inner{left:22px;right:22px;max-width:none;top:max(84px,11vh);}
+    .panel-inner h1{font-size:clamp(52px,15vw,72px);}
+    .panel-inner h2{font-size:clamp(28px,7.6vw,40px);margin-bottom:16px;}
+    .panel-inner p{font-size:16px;line-height:1.5;}
+    .panel-inner p.lede{font-size:18px;margin-top:22px;}
+    .eyebrow{font-size:11px;margin-bottom:14px;}
+    .submono{font-size:12px;margin-top:16px;}
+    .tags{gap:7px;margin-top:20px;font-size:11px;}
+    .tags span,.tags a{padding:5px 10px;}
+    .cue-row{margin-top:26px;}
+    .cue-row a{padding:8px 0 3px;}
+    .walker{height:min(30vh,250px);bottom:-2vh;}
     .ground{bottom:0;}
     .gh-grid{grid-template-columns:1fr !important;}
     .demo-grid{grid-template-columns:1fr 1fr !important;}
@@ -169,6 +187,26 @@
     .showcase > div:first-child{margin-bottom:40px !important;}
     .flagship-mark{display:none !important;}
     .footwrap{padding:84px 22px 56px !important;}
+    .footwrap h2{margin-bottom:40px !important;}
+    .footwrap .flink{padding:20px 4px !important;}
+  }
+  @media (max-width:560px){
+    .demo-grid{grid-template-columns:1fr !important;}
+  }
+  /* phones held sideways: very little height, so put the copy in the left half
+     and walk the figure along the right side instead of through the text */
+  @media (max-height:520px) and (orientation:landscape){
+    .panel-inner{top:52px;right:auto;max-width:56vw;}
+    .panel-inner h1{font-size:44px;}
+    .panel-inner h2{font-size:28px;margin-bottom:10px;}
+    .panel-inner p{font-size:14px;line-height:1.45;}
+    .panel-inner p.lede{font-size:15px;max-width:none;margin-top:14px;}
+    .eyebrow{margin-bottom:8px;}
+    .submono{margin-top:10px;}
+    .tags{margin-top:12px;gap:6px;}
+    .tags span,.tags a{padding:4px 8px;}
+    .cue-row{margin-top:14px;}
+    .walker{left:80%;height:62vh;bottom:-3vh;}
   }
 </style>
 </head>
